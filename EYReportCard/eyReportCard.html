@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Learning Milestones Report</title>
+    <style>
+        body {
+        font-size: 12px;
+        font-family: "Roboto", sans-serif;
+        width: 100%;
+        margin: auto;
+        }
+        table {
+        table-layout: fixed;
+        border-collapse: collapse;
+        }
+        .inner-table {
+        border: 1px solid #000;
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        margin-bottom: 18px;
+        }
+        .watermark {
+        position: fixed;
+        top: 40%;
+        left: 50%;
+        width: 498px;
+        height: 498px;
+        z-index: -1;
+        margin-top: -249px;
+        margin-left: -249px;
+        }
+        .inner-table td,
+        .inner-table th {
+        border: 1px solid #000;
+        padding: 6px 8px;
+        }
+        .signature-container {
+        width: 100%;
+        table-layout: fixed;
+        }
+        .signature-row {
+        vertical-align: bottom;
+        }
+        .signature-box {
+        text-align: center;
+        padding-top: 50px;
+        }
+        .signature-name {
+        font-size: 12px;
+        font-weight: 600;
+        margin: 0;
+        }
+        .signature-role {
+        font-weight: 600;
+        margin: 4px 0 0 0;
+        }
+        .page-break-new {
+            page-break-before: always;
+            break-before: page
+        }
+        .level-indicator {
+          display: inline-block;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+        }
+        .level-indicator-red {
+        background-color: #ea3a17;
+        }
+        .level-indicator-amber {
+        background-color: #fca507;
+        }
+        .level-indicator-green {
+        background-color: #018404;
+        }
+        .table-container {
+          width: 100%;
+          padding: 4px 6px;
+          table-layout: fixed;
+        }
+
+        .level-indicator-container {
+          display: grid;
+          gap: 8px;
+        }
+
+        .level-indicator-types {
+          display: inline-flex;
+        }
+        .school-details-container {
+          /* width: 75%; */
+          margin: 0 auto;
+          text-align: center;
+        }
+        @page {
+          padding: 10px;
+          size: 10in 8.5in;
+          margin: 24px;
+          border: 2px solid black;
+          border-top: 0;
+          marks: none;
+        }
+        .table-header {
+          /* color: #f06548; */
+          color: #88080f;
+          text-align: left;
+        }
+        header {
+            position: running(header);
+        }
+
+        @page {
+            margin-top: 160px;
+            @top-center {
+                content: element(header);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+    <header>
+        <div style="margin-top:30px;border: 2px solid black; padding: 8px;border-bottom: 0;">
+            <table style="width: 892px">
+                <thead>
+                <tr>
+                    <td style="width: 18%;">
+                        <div style="width: 100%;height: 112px;">
+                            <img th:src="${imageUrl}" style="width: 90px"/>
+                        </div>
+                    </td>
+
+                    <td style="width: 64%;">
+                        <div class="school-details-container">
+                            <h3 class="school-details" style="font-size: 25px; margin:0px;"><span th:text="${schoolName}"></span></h3>
+                            <h3 class="school-details" style="font-size: 18px; margin:0px;" th:text="${isCBSECurriculum}"></h3>
+
+                            <h3 class="school-details" style="font-size: 18px; margin:0px;">
+                                LEARNING MILESTONES REPORT - <span th:text="${academicYear}"></span>
+                            </h3>
+                        </div>
+                    </td>
+
+                    <td style="width: 18%;">
+                        <div style="width: 100%; height: 92px">
+                            <th:block th:if="${isEYCurriculum}">
+                                <img src="data:image/jpeg;base64,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"
+                                     style="width: 100%; height: 100%;object-fit:contain;"/>
+                            </th:block>
+                        </div>
+                    </td>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </header>
+    <table class="table-container">
+        <img th:src="${base64ImageUrl}" class="watermark"/>
+
+        <tbody>
+        <tr>
+            <td class="fw-semi-bold details-td" colspan="4">
+                CANDIDATE NAME
+                :
+            </td>
+            <td class="" style="text-align:start" colspan="6" th:text="${studentName}"></td>
+
+            <td class="fw-semi-bold details-td" colspan="4">
+                GRADE FACILITATOR
+                :
+            </td>
+            <td class="" colspan="5" th:text="${teacherName}"></td>
+
+            <td class="fw-semi-bold details-td" colspan="3">
+                GRADE
+                :
+            </td>
+            <td class="" colspan="2" th:text="${sectionName}"></td>
+        </tr>
+        <tr>
+            <td class="fw-semi-bold details-td" colspan="4">
+                SCHOOL SECTION
+                :
+            </td>
+            <td class="" style="text-align:start" colspan="6" th:text="${schoolSection}"></td>
+
+            <td class="fw-semi-bold details-td" colspan="4">
+                ASSESSMENT
+                :
+            </td>
+            <td class="" colspan="5" th:text="${assessment}"></td>
+
+            <td class="fw-semi-bold details-td" colspan="3">
+                ATTENDANCE
+                :
+            </td>
+            <td class="" colspan="2" th:text="${attendance}"></td>
+        </tr>
+
+        <tr>
+            <td colspan="24">
+                <p class="table-headings text-center" style="text-align:center;font-weight: 600;margin-bottom: 0px;
+ ">
+                    ACADEMIC PERFORMANCE RECORD
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="24" style="padding: 6px 0px">
+                <table class="inner-table">
+                    <thead>
+                    <tr>
+                        <th colspan="8" class="fw-semi-bold">AREAS OF LEARNING</th>
+                        <th colspan="3">LEARNING LEVEL</th>
+                        <th colspan="2">GRADE</th>
+                        <th colspan="6">AREAS OF LEARNING</th>
+                        <th colspan="3">LEARNING LEVEL</th>
+                        <th colspan="2">GRADE</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td colspan="8" class="fw-semi-bold">
+                            COMMUNICATION, LANGUAGE &amp; LITERACY - LISTENING
+                        </td>
+                        <td colspan="3" th:text="${academicPerformance.listenerName}"></td>
+                        <td colspan="2" class="text-center" th:text="${academicPerformance.listenerGrade}">
+                        </td>
+                        <td colspan="6">MATHEMATICS</td>
+                        <td colspan="3" th:text="${academicPerformance.mathematicsName}"></td>
+                        <td colspan="2" class="text-center"
+                            th:text="${academicPerformance.mathematicsGrade}"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="8" class="fw-semi-bold">
+                            COMMUNICATION, LANGUAGE &amp; LITERACY - SPEAKING
+                        </td>
+                        <td colspan="3" th:text="${academicPerformance.speakingName}"></td>
+                        <td colspan="2" class="text-center" th:text="${academicPerformance.speakingGrade}">
+                        </td>
+                        <td colspan="6">UNDERSTANDING THE WORLD</td>
+                        <td colspan="3" th:text="${academicPerformance.understandingWorldName}"></td>
+                        <td colspan="2" class="text-center"
+                            th:text="${academicPerformance.understandingGrade}"></td>
+                    </tr>
+                    <tr th:if="${academicPerformance != null}">
+                        <td colspan="8" class="fw-semi-bold">
+                            COMMUNICATION, LANGUAGE &amp; LITERACY - READING
+                        </td>
+                        <td colspan="3" th:text="${academicPerformance.readingName}"></td>
+                        <td colspan="2" class="text-center" th:text="${academicPerformance.readingGrade}">
+                        </td>
+                        <td colspan="6">
+                            PERSONAL, SOCIAL AND EMOTIONAL DEVELOPMENT
+                        </td>
+                        <td colspan="3" th:text="${academicPerformance.personalSocialEmotionalName}"></td>
+                        <td colspan="2" class="text-center"
+                            th:text="${academicPerformance.personalSocialEmotionalGrade}"></td>
+                    </tr>
+
+                    <tr th:if="${academicPerformance != null}">
+                        <td colspan="8" class="fw-semi-bold">
+                            COMMUNICATION, LANGUAGE &amp; LITERACY - WRITING
+                        </td>
+                        <td colspan="3" th:text="${academicPerformance.writingName}"></td>
+                        <td colspan="2" class="text-center" th:text="${academicPerformance.writingGrade}">
+                        </td>
+                        <td colspan="6">PHYSICAL DEVELOPMENT</td>
+                        <td colspan="3" th:text="${academicPerformance.physicalDvptName}"></td>
+                        <td colspan="2" class="text-center"
+                            th:text="${academicPerformance.physicalDvptGrade}"></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="24">
+                <p class="table-headings">GRADE FACILITATOR'S COMMENTS :</p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="24" class="td-border">
+                        <span th:text="${studentRemarks}">
+
+                        </span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="24">
+                <div style="margin-top: 100px;"></div>
+            </td>
+        </tr>
+        <!--        <tr>-->
+        <!--            <td th:colspan="${24 / #lists.size(signatures)}" th:each="signature : ${signatures}">-->
+        <!--                <div>-->
+        <!--                    <p class="signature-name" th:text="${signature.signatureName}"></p>-->
+        <!--                    <p class="signature-role" th:text="${signature.signatureLabel}"></p>-->
+        <!--                </div>-->
+        <!--            </td>-->
+        <!--        </tr>-->
+
+        <tr class="signature-row">
+            <td th:each="signature, iterStat : ${signatures}" th:colspan="${24 / #lists.size(signatures)}"
+                class="signature-box">
+                <div>
+                    <p class="signature-name" th:text="${signature.signatureName}"></p>
+                    <p class="signature-role" th:text="${signature.signatureLabel}"></p>
+                </div>
+            </td>
+        </tr>
+
+        <!-- <tr>
+  <td colspan="24">
+    <div style="margin-top: 62px"></div>
+  </td>
+</tr> -->
+
+        <!-- page break -->
+        <tr>
+            <td colspan="24">
+                <div class="page-break-new"></div>
+            </td>
+        </tr>
+        <!-- 2nd table -->
+        <tr th:if="${classSequence == 2 or classSequence == 3}">
+            <td colspan="24">
+                <p class="table-headings text-center" style="text-align:center;font-weight: 600;margin-bottom: 0px;
+ ">
+                    II LANGUAGE - HINDI / TELUGU
+                </p>
+            </td>
+        </tr>
+        <tr th:if="${classSequence == 2 or classSequence == 3}">
+            <td colspan="24" style="padding: 6px 0px">
+                <table class="inner-table">
+                    <thead>
+                    <tr>
+                        <th colspan="8" class="fw-semi-bold">AREAS OF LEARNING</th>
+                        <th colspan="4">LISTENING</th>
+                        <th colspan="4">SPEAKING</th>
+                        <th colspan="4">READING</th>
+                        <th colspan="4">WRITING</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td colspan="8" class="fw-semi-bold">LEARNING LEVEL</td>
+                        <td colspan="4" class="text-center" th:text="${secondLanguage.listeningName}"></td>
+                        <td colspan="4" class="text-center" th:text="${secondLanguage.speakingName}"></td>
+                        <td colspan="4" class="text-center" th:text="${secondLanguage.readingName}"></td>
+                        <td colspan="4" class="text-center" th:text="${secondLanguage.writingName}"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="8" class="fw-semi-bold">GRADE</td>
+                        <td colspan="4" class="text-center" th:text="${secondLanguage.listeningGrade}"></td>
+                        <td colspan="4" class="text-center" th:text="${secondLanguage.speakingGrade}"></td>
+                        <td colspan="4" class="text-center" th:text="${secondLanguage.readingGrade}"></td>
+                        <td colspan="4" class="text-center" th:text="${secondLanguage.writingGrade}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+        <!-- 3rd table -->
+        <tr>
+            <td colspan="24">
+                <p class="table-headings text-center" style="text-align:center;font-weight: 600;margin-bottom: 0px;
+ ">CREATIVE EXPRESSIONS</p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="24" style="padding: 6px 0px">
+                <table class="inner-table">
+                    <thead>
+                    <tr>
+                        <th colspan="8" class="fw-semi-bold">AREAS OF LEARNING</th>
+                        <th colspan="4">ART &amp; DESIGN</th>
+                        <th colspan="4">MUSIC</th>
+                        <th colspan="4">DANCE</th>
+                        <th colspan="4">DRAMA</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td colspan="8" class="fw-semi-bold">LEARNING LEVEL</td>
+                        <td colspan="4" class="text-center"
+                            th:text="${creativeExpression.artAndDesignName}"></td>
+                        <td colspan="4" class="text-center" th:text="${creativeExpression.musicName}"></td>
+                        <td colspan="4" class="text-center" th:text="${creativeExpression.danceName}"></td>
+                        <td colspan="4" class="text-center" th:text="${creativeExpression.dramaName}"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="8" class="fw-semi-bold">GRADE</td>
+                        <td colspan="4" class="text-center"
+                            th:text="${creativeExpression.artAndDesignGrade}"></td>
+                        <td colspan="4" class="text-center" th:text="${creativeExpression.musicGrade}"></td>
+                        <td colspan="4" class="text-center" th:text="${creativeExpression.danceGrade}"></td>
+                        <td colspan="4" class="text-center" th:text="${creativeExpression.dramaGrade}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+        <!-- 4th table -->
+        <tr>
+            <td colspan="24">
+                <p class="table-headings text-center" style="text-align:center;font-weight: 600;margin-bottom: 0px;
+">
+                    CAMBRIDGE LEARNER ATTRIBUTES
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="24" style="padding: 6px 0px">
+                <table class="inner-table">
+                    <thead>
+                    <tr>
+                        <th colspan="4" class="fw-semi-bold">AREAS OF LEARNING</th>
+                        <th colspan="4">RESPONSIBLE</th>
+                        <th colspan="4">INNOVATIVE</th>
+                        <th colspan="4">CONFIDENT</th>
+                        <th colspan="4">ENGAGED</th>
+                        <th colspan="4">REFLECTIVE</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td colspan="4" class="fw-semi-bold">LEARNING LEVEL</td>
+                        <td colspan="4" class="text-center" th:text="${entryLearner.responsibleName}"></td>
+                        <td colspan="4" class="text-center" th:text="${entryLearner.innovativeName}"></td>
+                        <td colspan="4" class="text-center" th:text="${entryLearner.workingInfoName}"></td>
+                        <td colspan="4" class="text-center" th:text="${entryLearner.engageName}"></td>
+                        <td colspan="4" class="text-center" th:text="${entryLearner.reflectiveName}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+        <!-- page break -->
+        <tr>
+            <td colspan="24">
+                <div class="page-break-new"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="24">
+                <p class="table-headings text-center">
+                    ACADEMIC PERFORMANCE GRADING RUBRIC
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="24">
+                <div>
+                    <p class="fw-semi-bold">CAMBRIDGE AREAS OF LEARNING</p>
+                </div>
+
+                <div>
+                    <p class="fw-semi-bold">
+                        Learner Learning Level &amp; Grading Rubric :
+                    </p>
+
+                    <div>
+                        <ul>
+                            <li th:each="skill : ${skillSet}" th:text="${skill}"></li>
+                        </ul>
+
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="24">
+                <div>
+                    <p class="fw-semi-bold">CAMBRIDGE LEARNER ATTRIBUTES</p>
+                </div>
+
+                <div>
+                    <p class="fw-semi-bold">Learner - Grading Rubric :</p>
+
+                    <div>
+
+                        <ul>
+                            <li th:each="skill : ${learnerAttributeSkills}" th:text="${skill}"></li>
+                        </ul>
+                    </div>
+                </div>
+            </td>
+        </tr>
+
+        <!-- page break -->
+        <tr>
+            <td colspan="24">
+                <div class="page-break-new"></div>
+            </td>
+        </tr>
+
+        <tr th:if="${eyGradeEntry != null and not #lists.isEmpty(eyGradeEntry.subjectGradeDtos)}"
+            th:each="subject : ${eyGradeEntry.subjectGradeDtos}">
+            <td colspan="24" style="padding: 6px 0px">
+                <table class="inner-table">
+                    <thead>
+                    <tr>
+                        <th colspan="24" class="table-header" th:text="${subject.subjectDisplayName}"></th>
+                    </tr>
+                    <tr>
+                        <th colspan="19">LEARNING STATEMENTS</th>
+                        <th colspan="5">LEARNING LEVEL INDICATOR</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Check if aosDataList is not empty before iterating -->
+                    <tr th:if="${subject.aosDataList != null and not #lists.isEmpty(subject.aosDataList)}"
+                        th:each="item : ${subject.aosDataList}">
+                        <td colspan="19" th:text="${item.aoName}"></td>
+                        <td colspan="5" align="center">
+                            <!--                            <span th:class="'level-indicator level-indicator-' + ${item.grading}"></span>-->
+                            <span
+                                    th:class="'level-indicator level-indicator-' + ${#strings.toLowerCase(item.grading)}"></span>
+                        </td>
+                    </tr>
+
+                    <!-- Area of Strength (Only if not null or empty) -->
+                    <tr th:if="${subject.areaOfStrength != null and subject.areaOfStrength != ''}">
+                        <td colspan="24">
+                            <strong>Area of Strength :</strong>
+                            <span th:text="${subject.areaOfStrength}"></span>
+                        </td>
+                    </tr>
+
+                    <!-- Area of Focus (Only if not null or empty) -->
+                    <tr th:if="${subject.areaOfFocus != null and subject.areaOfFocus != ''}">
+                        <td colspan="24">
+                            <strong>Area of Focus :</strong>
+                            <span th:text="${subject.areaOfFocus}"></span>
+                        </td>
+                    </tr>
+
+                    <tr
+                            th:if="${#strings.isEmpty(subject.areaOfStrength) and #strings.isEmpty(subject.areaOfFocus)}">
+                        <td colspan="24">
+                            <strong>Comments :</strong>
+                            <span th:text="${subject.comments}"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="24">
+                <div>
+                    <p class="fw-semi-bold">
+                        Learning Statements Learning Level Indicator :
+                    </p>
+                </div>
+
+                <div class="level-indicator-container">
+                    <div class="level-indicator-types">
+                          <span
+                                  class="level-indicator level-indicator-red me-8"
+                          ></span>
+                        <span>Red - Evolving to Progressing </span>
+                    </div>
+                    <div class="level-indicator-types">
+                          <span
+                                  class="level-indicator level-indicator-amber me-8"
+                          ></span>
+                        <span> Amber - Progressing to Prominent </span>
+                    </div>
+                    <div class="level-indicator-types">
+                        <span class="level-indicator level-indicator-green me-8"></span>
+                        <span> Green - Confident to Skillfull </span>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+
+</html>
