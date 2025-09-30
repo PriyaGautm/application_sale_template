@@ -16,6 +16,7 @@
         table {
         table-layout: fixed;
         border-collapse: collapse;
+        width: 100%;
         }
         .inner-table {
         border: 1px solid #000;
@@ -83,6 +84,10 @@
           padding: 4px 6px;
           table-layout: fixed;
         }
+        header table {
+        width:100% !important;
+        table-layout: auto;
+        }
 
         .level-indicator-container {
           display: grid;
@@ -99,7 +104,7 @@
         }
         @page {
           padding: 10px;
-          size: 10in 8.5in;
+          size: landscape;
           margin: 24px;
           border: 2px solid black;
           border-top: 0;
@@ -112,6 +117,7 @@
         }
         header {
             position: running(header);
+            width: 100%;
         }
 
         @page {
@@ -127,8 +133,8 @@
 
 <div class="page">
     <header>
-        <div style="margin-top:30px;border: 2px solid black; padding: 8px;border-bottom: 0;">
-            <table style="width: 892px">
+        <div style="margin-top:30px;border: 2px solid black; padding: 8px;border-bottom: 0;width: 100%;">
+            <table style="width: 100%;table-layout: auto;">
                 <thead>
                 <tr>
                     <td style="width: 18%;">
@@ -139,8 +145,10 @@
 
                     <td style="width: 64%;">
                         <div class="school-details-container">
-                            <h3 class="school-details" style="font-size: 25px; margin:0px;"><span th:text="${schoolName}"></span></h3>
-                            <h3 class="school-details" style="font-size: 18px; margin:0px;" th:text="${isCBSECurriculum}"></h3>
+                            <h3 class="school-details" style="font-size: 25px; margin:0px;"><span
+                                    th:text="${schoolName}"></span></h3>
+                            <h3 class="school-details" style="font-size: 18px; margin:0px;"
+                                th:text="${isCBSECurriculum}"></h3>
 
                             <h3 class="school-details" style="font-size: 18px; margin:0px;">
                                 LEARNING MILESTONES REPORT - <span th:text="${academicYear}"></span>
@@ -309,16 +317,58 @@
         <!--            </td>-->
         <!--        </tr>-->
 
-        <tr class="signature-row">
-            <td th:each="signature, iterStat : ${signatures}" th:colspan="${24 / #lists.size(signatures)}"
+        <tr>
+            <td th:if="${#lists.size(signatures) == 1}"
+                style="font-size:13px; padding-top: 0px; padding-bottom: 0px; text-align: left;"
+                colspan="24"
                 class="signature-box">
-                <div>
-                    <p class="signature-name" th:text="${signature.signatureName}"></p>
-                    <p class="signature-role" th:text="${signature.signatureLabel}"></p>
+                <div style="display: inline-block;text-align: center;">
+                    <div style="width: 128px; height:64px;">
+                        <img th:if="${signatures[0].signatureImage != null}"
+                             th:src="${signatures[0].signatureImage}"
+                             alt="signature"
+                             style="width: 100%; object-fit: contain; height: 64px;"/>
+                    </div>
+                    <p style="text-align: center;margin-bottom: 0;" th:text="${signatures[0].signatureName}"></p>
+                    <p th:text="${signatures[0].signatureLabel}" style="margin-top: 0;"></p>
+                </div>
+            </td>
+
+            <td th:each="signature, iterStat : ${signatures}"
+                th:if="${#lists.size(signatures) == 2}"
+                style="font-size:13px; padding-top: 0px; padding-bottom: 0px;"
+                th:styleappend="${iterStat.first} ? 'text-align: left;' : 'text-align: right;'"
+                colspan="12"
+                class="signature-box">
+                <div style="display: inline-block;text-align: center;">
+                    <div style="width: 128px; height:64px;">
+                        <img th:if="${signature.signatureImage != null}"
+                             th:src="${signature.signatureImage}"
+                             alt="signature"
+                             style="width: 100%; object-fit: contain; height: 64px;"/>
+                    </div>
+                    <p style="text-align: center;margin-bottom: 0;" th:text="${signature.signatureName}"></p>
+                    <p th:text="${signature.signatureLabel}" style="margin-top: 0;"></p>
+                </div>
+            </td>
+
+            <td th:each="signature, iterStat : ${signatures}"
+                th:if="${#lists.size(signatures) > 2}"
+                style="font-size:13px; padding-top: 0px; padding-bottom: 0px; text-align: center;"
+                th:colspan="${24 div #lists.size(signatures)}"
+                class="signature-box">
+                <div style="display: inline-block;text-align: center;">
+                    <div style="width: 128px; height:64px;">
+                        <img th:if="${signature.signatureImage != null}"
+                             th:src="${signature.signatureImage}"
+                             alt="signature"
+                             style="width: 100%; object-fit: contain; height: 64px;"/>
+                    </div>
+                    <p style="text-align: center;margin-bottom: 0;" th:text="${signature.signatureName}"></p>
+                    <p th:text="${signature.signatureLabel}" style="margin-top: 0;"></p>
                 </div>
             </td>
         </tr>
-
         <!-- <tr>
   <td colspan="24">
     <div style="margin-top: 62px"></div>
